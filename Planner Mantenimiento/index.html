@@ -1,0 +1,312 @@
+
+
+
+
+
+
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Registro de Mantenimiento</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+
+  <!-- XLSX para exportar -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+  <!-- Tu script -->
+  <script src="app.js" defer></script>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-image: url('fondo_login.jpg');
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+    }
+
+    #loginContainer {
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      gap: 30px;
+      flex-wrap: wrap;
+      padding: 40px;
+    }
+
+    .login {
+      background-color: rgba(255, 255, 255, 0.9);
+      padding: 20px;
+      border-radius: 10px;
+      width: 100%;
+      max-width: 350px;
+      box-shadow: 0 0 5px rgba(0,0,0,0.2);
+    }
+
+    .public-history {
+      background-color: rgba(255, 255, 255, 0.9);
+      padding: 20px;
+      border-radius: 10px;
+      width: 100%;
+      max-width: 600px;
+      max-height: 500px;
+      overflow-y: auto;
+      box-shadow: 0 0 5px rgba(0,0,0,0.2);
+    }
+
+    .plan {
+      background-color: rgba(255, 255, 255, 0.95);
+      padding: 20px;
+      border-radius: 10px;
+      width: 100%;
+      max-width: 550px;
+      margin: 30px auto;
+      box-shadow: 0 0 5px rgba(0,0,0,0.2);
+    }
+
+    .historial {
+      background-color: rgba(255, 255, 255, 0.95);
+      padding: 20px;
+      border-radius: 10px;
+      width: 95%;
+      max-width: 1000px;
+      margin: 30px auto;
+      overflow-x: auto;
+      box-shadow: 0 0 5px rgba(0,0,0,0.2);
+    }
+
+    h2, h3 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    input, textarea, button {
+      display: block;
+      width: 100%;
+      margin: 10px 0;
+      padding: 10px;
+      font-size: 16px;
+      box-sizing: border-box;
+    }
+
+    button {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    .activity {
+  margin-bottom: 15px;
+  display: flex;
+  flex-direction: column;
+}
+
+.actividad-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 5px 0;
+}
+.actividad-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 5px 0;
+}
+.actividad-texto {
+  flex-grow: 1;
+  text-align: left;
+  font-weight: bold;
+  padding-right: 10px;
+  white-space: nowrap;
+}
+
+
+.equipo-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.equipo-item input[type="checkbox"] {
+  margin-right: 10px;
+}
+
+.actividad-item {
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  padding: 10px;
+  margin-bottom: 8px;
+  display: flex;
+  flex-direction: column;
+}
+.equipo-item, .actividad-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  padding: 10px;
+  margin-bottom: 8px;
+  box-sizing: border-box;
+}
+
+.equipo-item label, .actividad-texto {
+  flex-grow: 1;
+  font-weight: bold;
+  padding-right: 10px;
+  white-space: normal;
+  overflow-wrap: break-word;
+  color: #333;
+}
+
+.equipo-item input[type="checkbox"],
+.actividad-item input[type="checkbox"] {
+  margin-left: 10px;
+  transform: scale(1.2);
+}
+
+.actividad-texto {
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+    .activity textarea {
+      display: none;
+      width: 100%;
+      height: 60px;
+      resize: vertical;
+      margin-top: 5px;
+    }
+
+    #activities {
+      max-height: 400px;
+      overflow-y: auto;
+      padding-right: 10px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+
+    th, td {
+      border: 1px solid #ccc;
+      padding: 8px;
+      background-color: white;
+      text-align: left;
+    }
+
+    th {
+      background-color: #f0f0f0;
+    }
+
+    #loginError {
+      color: red;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- LOGIN + HISTORIAL PÚBLICO -->
+  <div id="loginContainer">
+    <div class="login">
+      <h2>Iniciar sesión</h2>
+      <input type="email" id="email" placeholder="Correo electrónico">
+      <input type="password" id="password" placeholder="Contraseña">
+      <button onclick="login()">Ingresar</button>
+      <p id="loginError"></p>
+    </div>
+
+    <div class="public-history">
+      <h3>Historial de Actividades</h3>
+      <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 10px;">
+        <div style="flex: 1;">
+          <label>Desde:</label>
+          <input type="date" id="fechaInicio">
+        </div>
+        <div style="flex: 1;">
+          <label>Hasta:</label>
+          <input type="date" id="fechaFin">
+        </div>
+        <div style="flex: 1; align-self: flex-end;">
+          <button onclick="filtrarHistorial()">Filtrar</button>
+        </div>
+      </div>
+      <table id="publicHistoryTable">
+        <thead>
+        
+        
+                <tr>
+                  <th>Fecha</th>
+                  <th>Hora</th>
+                  <th>Actividad</th>
+                  <th>Observación</th>
+                  <th>Usuario</th>
+                  <th>Máquina</th> <!-- NUEVA COLUMNA -->
+                </tr>
+              
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+<!-- PLAN DE MANTENIMIENTO -->
+<div class="plan" style="display:none;">
+    <h2>Registro de Mantenimiento</h2>
+  
+    <!-- Checklist de equipos -->
+    <div id="equiposChecklist" style="margin-bottom: 20px; max-height: 300px; overflow-y: auto;">
+      <h3>Seleccionar equipo</h3>
+      <div id="equiposContainer"></div>
+    </div>
+  
+    <!-- Actividades dinámicas -->
+    <div id="activities"></div>
+  
+    <!-- Botones -->
+    <button onclick="savePlan()">Guardar y Exportar</button>
+    <button onclick="showHistory()">Ver Historial</button>
+    <button onclick="logout()">Cerrar sesión</button>
+  </div>
+  
+  
+  <!-- HISTORIAL COMPLETO -->
+  <div class="historial" style="display:none;">
+    <h2>Historial de Actividades</h2>
+    <table id="historyTable">
+        <thead>
+            <tr>
+              <th>Fecha</th>
+              <th>Hora</th>
+              <th>Actividad</th>
+              <th>Observación</th>
+              <th>Usuario</th>
+              <th>Máquina</th> <!-- NUEVA COLUMNA -->
+            </tr>
+          </thead>
+      <tbody></tbody>
+    </table>
+    <button onclick="backToPlan()">Volver</button>
+    <button onclick="downloadFullExcel()">Descargar</button>
+  </div>
+
+</body>
+</html>
