@@ -19,7 +19,7 @@ data = [doc.to_dict() for doc in docs]
 st.title("📊 Dashboard de Mantenimiento")
 
 if not data:
-    st.warning("⚠️ No se encontraron documentos en la colección 'mantenimientos'")
+    st.warning("⚠️ No se encontraron documentos en la colección 'mantenimiento'")
 else:
     df = pd.DataFrame(data)
 
@@ -32,7 +32,7 @@ else:
     # -----------------------------
     # 4. Clasificación Preventivo/Correctivo
     # -----------------------------
-    preventivos = ["limpieza","limpio", "ajuste","ajusto", "Obstrucción ", "limpoesa", "ajuete", "obstrucion"]
+    preventivos = ["limpieza", "limpio", "ajuste", "ajusto", "obstrucción", "limpoesa", "ajuete", "obstrucion"]
     correctivos = ["cambio", "rebobinado", "rebobinado de motores", "reparacion", "reparar"]
 
     def clasificar(row):
