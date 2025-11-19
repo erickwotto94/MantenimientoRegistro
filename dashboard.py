@@ -6,8 +6,12 @@ import streamlit as st
 # -----------------------------
 # 1. Conexión a Firestore
 # -----------------------------
-cred = credentials.Certificate("serviceAccount.json")
-firebase_admin.initialize_app(cred)
+try:
+    if not firebase_admin._apps:
+        cred = credentials.Certificate("serviceAccount.json")
+        firebase_admin.initialize_app(cred)
+except ValueError:
+    pass  # Ya está inicializada
 db = firestore.client()
 
 # -----------------------------
@@ -92,3 +96,4 @@ else:
         "mantenimientos.csv",
         "text/csv"
     )
+
